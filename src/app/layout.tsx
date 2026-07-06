@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import "./globals.css"
+import "./global.css"
 
 export const metadata: Metadata = {
-  title: "Suneel | UI Portfolio Developer",
-  description: "Professional portfolio showcasing skills, certifications, articles, and book recommendations.",
+  title: "Suneel Havapnor | DevSecOps Engineer",
+  description: "Cloud, DevSecOps, security, platform engineering, projects, notes, and articles.",
 };
 
 export default function RootLayout({
@@ -12,13 +12,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="scroll-smooth">
-      <head>
-        <meta name="theme-color" content="#0f172a" />
-      </head>
-      <body className="bg-gradient-to-br from-slate-900 via-slate-950 to-black text-slate-100 antialiased">
-        {children}
-      </body>
+    <html lang="en">
+      <body>{children}</body>
     </html>
   );
 }
