@@ -1,0 +1,134 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Core Profile
+model Profile {
+  id        String   @id @default(cuid())
+  name      String
+  title     String
+  bio       String   @db.Text
+  avatar    String?
+  email     String   @unique
+  phone     String?
+  location  String?
+  website   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  skills        Skill[]
+  certifications Certification[]
+  articles      Article[]
+  bookRecommendations BookRecommendation[]
+  socialLinks   SocialLink[]
+}
+
+// Skills & Expertise
+model Skill {
+  id        String   @id @default(cuid())
+  name      String
+  category  String   // "Frontend", "Backend", "DevOps", etc.
+  proficiency Int     // 1-5 scale
+  description String  @db.Text
+  icon      String?  // Icon URL or name
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profileId String
+  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+  @@unique([profileId, name])
+}
+
+// Certifications
+model Certification {
+  id        String   @id @default(cuid())
+  title     String
+  issuer    String
+  issueDate DateTime
+  expiryDate DateTime?
+  credentialUrl String?
+  badgeUrl  String?
+  description String? @db.Text
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profileId String
+  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+}
+
+// Articles & Blog Posts
+model Article {
+  id        String   @id @default(cuid())
+  title     String
+  slug      String   @unique
+  excerpt   String   @db.Text
+  content   String   @db.Text
+  thumbnail String?
+  published Boolean  @default(false)
+  publishedAt DateTime?
+  readTime  Int      // in minutes
+  tags      String[] // Array of tags
+  views     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profileId String
+  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+  @@index([published])
+}
+
+// Book Recommendations
+model BookRecommendation {
+  id        String   @id @default(cuid())
+  title     String
+  author    String
+  coverUrl  String?
+  description String @db.Text
+  rating    Float   // 1-5 scale
+  readStatus String  // "want_to_read", "reading", "completed"
+  review    String? @db.Text
+  link      String?
+  category  String  // "Technical", "Design", "Leadership", "Productivity"
+  order     Int     @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profileId String
+  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+}
+
+// Social Links
+model SocialLink {
+  id        String   @id @default(cuid())
+  platform  String   // "github", "twitter", "linkedin", etc.
+  url       String
+  icon      String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profileId String
+  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+  @@unique([profileId, platform])
+}
